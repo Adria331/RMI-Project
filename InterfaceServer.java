@@ -24,4 +24,7 @@ digital content is not locally stored the, The RMI Server redirect the petition 
 source server in a transparent way for the client. */
 
 
+	// Opcional 
+	public void modifyContentTitle(String oldTitle, String newTitle,  User user);
+	public void deleteContent(String title, User user);
 }
