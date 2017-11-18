@@ -1,13 +1,9 @@
 
 
 import java.rmi.*;
-
 import java.rmi.RemoteException;
-
 import java.util.List;
-import java.util.Map;
-import java.util.Arrays;
-import java.util.ArrayList;
+
 
 public interface InterfaceServer extends Remote{
 

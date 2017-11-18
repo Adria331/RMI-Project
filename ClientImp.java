@@ -1,23 +1,23 @@
 
 
-import java.rmi.*;
+import java.rmi.server.UnicastRemoteObject;
+import java.rmi.RemoteException;
+import java.util.List;
 
 
-public class ClientImp extends UnicastRemoteObject implements ClientInterface{
+public class ClientImp extends UnicastRemoteObject implements InterfaceClient{
 
 	public String contentPath = "/home/adria/rmi/content";
 
 	public ClientImp() throws RemoteException{
-
+		super();
 	}
 
-	@Override
 	public void sendMessage(String message) throws RemoteException{
 
 	}
-	
-	@Override
-	public void sendContent(byte[] file, String title, String description) throws RemoteException{
+
+	public void uploadContent(byte[] file, String title, String description) throws RemoteException{
 		
 	}
 

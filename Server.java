@@ -1,8 +1,5 @@
 
-import java.rmi.Naming;
-
-import java.rmi.RemoteException;
-import java.rmi.AccessException;
+import java.rmi.*;
 import java.net.MalformedURLException;
 
 import java.rmi.registry.LocateRegistry;
@@ -27,7 +24,7 @@ public class Server{
 		}catch(RemoteException ex){
 			System.out.println("Server not ready");
 		}catch(MalformedURLException ex){
-			System.out.println("Registry URL has not an appropiate name");
+			System.out.println("Registry has not an appropiate url");
 		}
 
 
