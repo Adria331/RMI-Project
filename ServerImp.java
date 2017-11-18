@@ -1,8 +1,15 @@
 
-public class ServerImp extends UnicastRemoteObject implements ServerInterface{
-	private String filePath;
-	private String ipAdd;
-	private int port;
+import java.rmi.server.UnicastRemoteObject;
+import java.rmi.RemoteException;
+import java.util.List;
+import java.util.Arrays;
+import java.util.ArrayList;
+
+public class ServerImp extends UnicastRemoteObject implements InterfaceServer{
+
+	private static String filePath;
+	private static int port = 4000;
+	private static String ipAdd = "localhost";
 
 
 	public ServerImp() throws RemoteException{
@@ -21,7 +28,7 @@ public class ServerImp extends UnicastRemoteObject implements ServerInterface{
 
 
 	public List<String> getContent(String description) throws RemoteException{
-
+		return null;
 	}
 
 
@@ -35,8 +42,8 @@ public class ServerImp extends UnicastRemoteObject implements ServerInterface{
 	}
 
 
-	public getContentAdvanced() throws RemoteException{
-
+	public List<String> getContentAdvanced() throws RemoteException{
+		return null;
 	}
 
 
@@ -52,5 +59,13 @@ public class ServerImp extends UnicastRemoteObject implements ServerInterface{
 
 	public void deleteContent(String title, User user) throws RemoteException{
 
+	}
+
+	public void setAdd(String add){
+		this.ipAdd = add;
+	}
+
+	public void setPort(int port){
+		this.port = port;
 	}
 }

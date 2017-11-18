@@ -1,14 +1,13 @@
 
 public class Content{
 
+	private String filepath;
 	private String title;
 	private String description;
-	private String id; // clau per guardarlo
-
-	public Content(String title, String description){
+	
+	public Content(String title, String description, String filepath){
 		this.title = title;
 		this.description = description;
-		this.id = "";
 	}
 
 	public String getTitle(){
@@ -24,7 +23,7 @@ public class Content{
 	}
 
 	public void setTitle(String newTitle){
-		this.title = newTitleM
+		this.title = newTitleM;
 	}
 
 	public void setDescription(String newDescription){
