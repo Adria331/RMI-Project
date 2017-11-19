@@ -1,6 +1,8 @@
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,7 +19,7 @@ public class Client{
 	public static String username = null;
 	public static String password;
 
-	public static String filePath = "/home/adria/rmi/content";
+	public static String filePath = "/home/adria/rmi/content/";
 
 	public static ClientImp client;
 	public static InterfaceServer server;
@@ -32,10 +34,13 @@ public class Client{
 			server = (InterfaceServer) Naming.lookup(url);
 		}catch(NotBoundException ex){
 			System.out.println("The url is not currently bound");
+			System.exit(0);
 		}catch(MalformedURLException ex){
 			System.out.println("Registry has not an appropiate url");
+			System.exit(0);
 		}catch(RemoteException ex){
 			System.out.println("Registry cannot be contacted");
+			System.exit(0);
 		}
 
 		// All the options
@@ -109,7 +114,7 @@ public class Client{
 							break;
 
 					}else if(Integer.parseInt(escollit) == 2){
-							System.out.println("You have choosed to Upload Content");
+							upload();
 							
 					}else if(Integer.parseInt(escollit) == 3){
 							System.out.println("You have choosed to Get some Content with your description");
@@ -124,12 +129,15 @@ public class Client{
 							System.out.println("You have choosed to delete a content of yours");
 							
 					}else if(Integer.parseInt(escollit) == 7){
-							System.out.println("You have choosed to delete your account");
-							
+							server.discardClient(username, password, client);
+							username = null;
+							password = null;
 					}else{
 						System.out.println("Not a valid Option");
 					}
 
+					if(username == null)
+						break;
 
 				}//While true
 			}//Else si estas loged
@@ -148,6 +156,22 @@ public class Client{
 		if(dades != null){
 			username = dades[0];
 			password = dades[1];
+		}
+	}
+
+	public static void upload() throws RemoteException{
+		String title = scanner("Title of the content?");
+		String desc = scanner("Description of the content?");
+		String filename = scanner("File name? (extension included)");
+		System.out.println("The route is "+ filePath + filename);
+
+		try{
+			byte[] data = Files.readAllBytes(new File(filePath + filename).toPath());
+			server.uploadContent(title, desc, filename, filePath + filename, username, data, client);
+
+		}catch(IOException ex){
+			System.out.println("Invalid file");
+			System.out.println(ex);
 		}
 	}
 }

@@ -12,6 +12,7 @@ public interface InterfaceServer extends Remote{
 	public void discardClient(String username, String pw, InterfaceClient client) throws RemoteException; //Treure client de la llista
 	public String[] loginClient(String username, String pw, InterfaceClient client) throws RemoteException;
 
+	public void uploadContent(String title, String desc, String filename, String path, String username, byte[] data, InterfaceClient client) throws RemoteException;
 	public List<String> getContent(String description, InterfaceClient client) throws RemoteException; // Llista fitxers a traves de "textual description"
 	public void downloadContent(String title, InterfaceClient client) throws RemoteException; // Se descargue fitxer tenin el seu titol
 
