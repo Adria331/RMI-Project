@@ -10,13 +10,17 @@ import java.rmi.*;
 import java.net.MalformedURLException;
 
 import java.util.List;
+import java.util.Scanner;
 
 public class Client{
 
-	public static User user;
-	public static String filePath;
+	public static String username = null;
+	public static String password;
+
+	public static String filePath = "/home/adria/rmi/content";
 
 	public static ClientImp client;
+	public static InterfaceServer server;
 
 	public static void main(String args[]){
 		
@@ -25,7 +29,7 @@ public class Client{
 		String url = "rmi://" + ip + ":" + Integer.toString(port) + "/mytube";
 
 		try{
-			InterfaceServer server = (InterfaceServer) Naming.lookup(url);
+			server = (InterfaceServer) Naming.lookup(url);
 		}catch(NotBoundException ex){
 			System.out.println("The url is not currently bound");
 		}catch(MalformedURLException ex){
@@ -37,7 +41,7 @@ public class Client{
 		// All the options
 		try{
 			client = new ClientImp();
-			options();
+			choice();
 
 		}catch(RemoteException ex){
 			System.out.println("A RemoteException has been caught");
@@ -45,7 +49,105 @@ public class Client{
 
 	}
 
-	public static void options() throws RemoteException{
+	public static String scanner(String message){
+		System.out.println(message);
+		Scanner scan = new Scanner(System.in);
+		String text = scan.nextLine();
+		return text;
 	}
 
+	public static void choice() throws RemoteException{
+		while(true){
+			if(username == null){
+				while(true){
+					String opcions = "\n///////////////////////////////////// \n"+
+					"0 = register \n" +
+					"1 = login \n"+
+					"///////////////////////////////////// \n";
+
+					String escollit = scanner(opcions);
+					
+					if(Integer.parseInt(escollit) == 0){
+						System.out.println("You have choosed to register");
+						register();
+					}
+					else if(Integer.parseInt(escollit) == 1){
+						System.out.println("You have choosed to log in");
+						login();
+					}else{
+						System.out.println("Not a valid Option");
+					}
+
+					System.out.println("/////////////////////////////////////");
+					if(username != null)
+						break;
+				}
+
+			}else{
+				while(true){
+					String opcions = "\n///////////////////////////////////// \n"+
+						"0 = Disconnect \n" +
+						"1 = Logout \n"+
+						"2 = Upload Content \n"+
+						"3 = Get Content by description  \n"+
+						"4 = Download Content by Title \n"+
+						"5 = Modify Title of your content  \n"+
+						"6 = Delete your content \n"+
+						"7 = Delete your account \n"+
+						"////////////////////////////////// \n";
+
+					String escollit = scanner(opcions);
+
+					if(Integer.parseInt(escollit) == 0){
+							System.out.println("You are going to be desconnected from the client");
+							System.exit(0);
+							
+					}else if(Integer.parseInt(escollit) == 1){
+							System.out.println("You have choosed to log out");
+							username = null;
+							password = null;
+							break;
+
+					}else if(Integer.parseInt(escollit) == 2){
+							System.out.println("You have choosed to Upload Content");
+							
+					}else if(Integer.parseInt(escollit) == 3){
+							System.out.println("You have choosed to Get some Content with your description");
+							
+					}else if(Integer.parseInt(escollit) == 4){
+							System.out.println("You have choosed to download Content with your title");
+							
+					}else if(Integer.parseInt(escollit) == 5){
+							System.out.println("You have choosed to modify a title of your content");
+							
+					}else if(Integer.parseInt(escollit) == 6){
+							System.out.println("You have choosed to delete a content of yours");
+							
+					}else if(Integer.parseInt(escollit) == 7){
+							System.out.println("You have choosed to delete your account");
+							
+					}else{
+						System.out.println("Not a valid Option");
+					}
+
+
+				}//While true
+			}//Else si estas loged
+		}
+	}
+
+	public static void register() throws RemoteException{
+		String name = scanner("Username?");
+		String pasw = scanner("Password?");
+		server.registerClient(name, pasw, client);
+	}
+	public static void login() throws RemoteException{
+		String name = scanner("\nUsername?");
+		String pasw = scanner("\nPassword?");
+		String[] dades = server.loginClient(name, pasw, client);
+		if(dades != null){
+			username = dades[0];
+			password = dades[1];
+		}
+	}
 }

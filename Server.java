@@ -26,13 +26,9 @@ public class Server{
 		}catch(MalformedURLException ex){
 			System.out.println("Registry has not an appropiate url");
 		}
-
-
 		/*catch(AccessException ex){
 			System.out.println("Operation not permited");
 		}*/
-
-
 	}
 
 

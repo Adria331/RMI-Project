@@ -14,7 +14,7 @@ public class ClientImp extends UnicastRemoteObject implements InterfaceClient{
 	}
 
 	public void sendMessage(String message) throws RemoteException{
-
+		System.out.println(message);
 	}
 
 	public void uploadContent(byte[] file, String title, String description) throws RemoteException{
