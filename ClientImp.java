@@ -2,23 +2,29 @@
 
 import java.rmi.server.UnicastRemoteObject;
 import java.rmi.RemoteException;
-import java.util.List;
+import java.util.*;
 
 
 public class ClientImp extends UnicastRemoteObject implements InterfaceClient{
 
-	public String contentPath = "/home/adria/rmi/content";
+	public List<String> keys;
 
 	public ClientImp() throws RemoteException{
 		super();
+		keys = new ArrayList<String>();
 	}
 
 	public void sendMessage(String message) throws RemoteException{
 		System.out.println(message);
 	}
 
-	public void uploadContent(byte[] file, String title, String description) throws RemoteException{
-		
+
+	public void saveContentKey(String key) throws RemoteException{
+		keys.add(key);
+	}
+
+	public void removeContentKey(String key) throws RemoteException{
+		keys.add(key);
 	}
 
 }

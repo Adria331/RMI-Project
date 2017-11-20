@@ -8,10 +8,9 @@ public class Content implements Serializable{
 	private String title;
 	private String description;
 	private String filename;
-
 	private String ownerName;
-	private byte[] file;
-	
+	private String key;
+
 	public Content(){
 		
 	}
@@ -27,6 +26,10 @@ public class Content implements Serializable{
 		return this.title;
 	}
 
+	public String getContentKey(){
+		return this.key;
+	}
+
 	public String getDescription(){
 		return this.description;
 	}
@@ -35,16 +38,16 @@ public class Content implements Serializable{
 		return this.ownerName;
 	}
 
-	public byte[] getFile(){
-		return this.file;
-	}
-
 	public String getFilename(){
 		return this.filename;
 	}
 
 	public String getfilepath(){
 		return this.filepath;
+	}
+
+	public void setContentKey(String key){
+		this.key = key;
 	}
 
 	public void setfilepath(String filepath){
@@ -61,10 +64,6 @@ public class Content implements Serializable{
 
 	public void setOwnerName(String name){
 		this.ownerName = name;
-	}
-
-	public void setFile(byte[] file){
-		this.file = file;
 	}
 
 	public void setFilename(String filename){

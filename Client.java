@@ -1,6 +1,7 @@
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import java.nio.file.Files;
@@ -16,19 +17,23 @@ import java.util.Scanner;
 
 public class Client{
 
-	public static String username = null;
-	public static String password;
-
 	public static String filePath = "/home/adria/rmi/content/";
-
+	public static boolean registered = false;
 	public static ClientImp client;
 	public static InterfaceServer server;
 
 	public static void main(String args[]){
+
+		String ip = scanner("Select the Ip address of the server (default is localhost)");
+		String port = scanner("Select the port of the server (default is 4000)");
 		
-		int port = 4000;
-		String ip = "localhost";
-		String url = "rmi://" + ip + ":" + Integer.toString(port) + "/mytube";
+		if(port == null || port.equals(""))
+			port = "4000";
+
+		if(ip == null || ip.equals(""))
+			ip = "localhost";
+
+		String url = "rmi://" + ip + ":" + port + "/mytube";
 
 		try{
 			server = (InterfaceServer) Naming.lookup(url);
@@ -63,81 +68,108 @@ public class Client{
 
 	public static void choice() throws RemoteException{
 		while(true){
-			if(username == null){
+			if(registered == false){
 				while(true){
 					String opcions = "\n///////////////////////////////////// \n"+
-					"0 = register \n" +
-					"1 = login \n"+
+					"1 = Register \n" +
+					"2 = Exit client \n" +
+					"3 = If already registered\n" +
 					"///////////////////////////////////// \n";
 
 					String escollit = scanner(opcions);
 					
-					if(Integer.parseInt(escollit) == 0){
-						System.out.println("You have choosed to register");
+					if(escollit.equals("1")){
+						System.out.println("You have chosed to register");
 						register();
-					}
-					else if(Integer.parseInt(escollit) == 1){
-						System.out.println("You have choosed to log in");
-						login();
+					}else if(escollit.equals("2")){
+						System.out.println("You are going to be desconnected from the client");
+						System.exit(0);
+					}else if(escollit.equals("3")){
+						registered = true;
 					}else{
 						System.out.println("Not a valid Option");
 					}
 
 					System.out.println("/////////////////////////////////////");
-					if(username != null)
+					if(registered){
+						System.out.println("Those are your options:\n");
 						break;
+					}
 				}
 
 			}else{
 				while(true){
 					String opcions = "\n///////////////////////////////////// \n"+
-						"0 = Disconnect \n" +
-						"1 = Logout \n"+
+						"1 = Exit client \n" +
 						"2 = Upload Content \n"+
 						"3 = Get Content by description  \n"+
 						"4 = Download Content by Title \n"+
 						"5 = Modify Title of your content  \n"+
-						"6 = Delete your content \n"+
-						"7 = Delete your account \n"+
+						"6 = Delete content of yours \n"+
+						"7 = Remove your client from the server\n"+
+						"8 = List your content \n"+
+						"9 = Go back \n"+
 						"////////////////////////////////// \n";
 
 					String escollit = scanner(opcions);
 
-					if(Integer.parseInt(escollit) == 0){
+					if(escollit.equals("1")){
 							System.out.println("You are going to be desconnected from the client");
 							System.exit(0);
-							
-					}else if(Integer.parseInt(escollit) == 1){
-							System.out.println("You have choosed to log out");
-							username = null;
-							password = null;
-							break;
 
-					}else if(Integer.parseInt(escollit) == 2){
+
+
+					}else if(escollit.equals("2")){
 							upload();
 							
-					}else if(Integer.parseInt(escollit) == 3){
-							System.out.println("You have choosed to Get some Content with your description");
-							
-					}else if(Integer.parseInt(escollit) == 4){
-							System.out.println("You have choosed to download Content with your title");
-							
-					}else if(Integer.parseInt(escollit) == 5){
-							System.out.println("You have choosed to modify a title of your content");
-							
-					}else if(Integer.parseInt(escollit) == 6){
-							System.out.println("You have choosed to delete a content of yours");
-							
-					}else if(Integer.parseInt(escollit) == 7){
-							server.discardClient(username, password, client);
-							username = null;
-							password = null;
+
+
+					}else if(escollit.equals("3")){
+							System.out.println("You have chosed to list content with your description");
+							String desc = scanner("Write a description to search content");
+							server.getContent(desc, client);
+
+
+					}else if(escollit.equals("4")){
+							System.out.println("You have chosed to download content with your title");
+							downloadContentFile();
+
+
+					}else if(escollit.equals("5")){
+							System.out.println("You have chosed to modify a title of your content");
+							String oldtitle = scanner("Title of the content you want to change?");
+							String newtitle = scanner("New title for the content?");
+							server.modifyContentTitle(oldtitle, newtitle, client);
+
+
+					}else if(escollit.equals("6")){
+							System.out.println("You have chosed to delete a content of yours");
+							String title = scanner("Title of the content you want to delete?");
+							server.deleteContent(title, client);
+
+
+
+					}else if(escollit.equals("7")){
+							server.discardClient(client);
+							System.out.println("Your client was removed from the server");
+							registered = false;
+
+					}else if(escollit.equals("8")){
+							System.out.println("You have chosed to list your content uploaded");
+							server.listAllMyContent(client);
+
+					}else if(escollit.equals("9")){
+							registered = false;
+									
+
+
 					}else{
 						System.out.println("Not a valid Option");
 					}
 
-					if(username == null)
+					if(!registered){
 						break;
+					}
 
 				}//While true
 			}//Else si estas loged
@@ -146,32 +178,37 @@ public class Client{
 
 	public static void register() throws RemoteException{
 		String name = scanner("Username?");
-		String pasw = scanner("Password?");
-		server.registerClient(name, pasw, client);
-	}
-	public static void login() throws RemoteException{
-		String name = scanner("\nUsername?");
-		String pasw = scanner("\nPassword?");
-		String[] dades = server.loginClient(name, pasw, client);
-		if(dades != null){
-			username = dades[0];
-			password = dades[1];
-		}
+		server.registerClient(name,  client);
 	}
 
 	public static void upload() throws RemoteException{
 		String title = scanner("Title of the content?");
 		String desc = scanner("Description of the content?");
 		String filename = scanner("File name? (extension included)");
-		System.out.println("The route is "+ filePath + filename);
 
 		try{
 			byte[] data = Files.readAllBytes(new File(filePath + filename).toPath());
-			server.uploadContent(title, desc, filename, filePath + filename, username, data, client);
+			server.uploadContent(title, desc, filename, filePath + filename, data, client);
 
 		}catch(IOException ex){
 			System.out.println("Invalid file");
 			System.out.println(ex);
+		}
+	}
+
+	public static void downloadContentFile(){
+		String title = scanner("Title of the content you want to download?");
+		
+		try{
+			byte[] data = server.downloadContent(title, client);
+			new File(filePath+title).mkdir();
+			String filename = server.getFileName(title, client);
+			FileOutputStream fos = new FileOutputStream(filePath+title+"/"+ filename);
+			fos.write(data);
+			fos.close();
+			System.out.println("File downloaded at: " + filePath+title+"/"+ filename);
+		}catch(IOException ex){
+			System.out.println("File couldn't be uploaded");
 		}
 	}
 }
