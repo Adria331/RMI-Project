@@ -38,7 +38,7 @@ public class Server{
 			startRegistry();
 			String url = "rmi://" + ip + ":" + Integer.toString(port) + "/mytube";
 			Naming.rebind(url, obj);
-			System.out.println("Server ready");
+			
 
 
                         while(addServer){
@@ -48,6 +48,7 @@ public class Server{
                                         try{
                                                 InterfaceServer s  = (InterfaceServer) Naming.lookup(urlserver2);
                                                 s.addServer((InterfaceServer) Naming.lookup(url));
+                                                obj.addServer(s);
                                         }catch(NotBoundException ex){
                                                 System.out.println("The url is not currently bound");
                                         }catch(MalformedURLException ex){
@@ -64,7 +65,7 @@ public class Server{
                                         
                         }
 
-
+                        System.out.println("Server ready");
 
 		}catch(RemoteException ex){
 			System.out.println("Server not ready");

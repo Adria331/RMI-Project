@@ -105,10 +105,12 @@ public class ServerImp extends UnicastRemoteObject implements InterfaceServer{
 			if(c.getDescription().equals(description))
 				titles.add(c.getTitle());
 		}
-		
+	     System.out.println(servers.size());
                 for(InterfaceServer s : servers){
                         List<Content> otherContent = s.returnContents();
+                        System.out.println("oda");
                         for(Content c : otherContent){
+                                System.out.println("oda1");
                                 if(c.getDescription().equals(description))
 				        titles.add(c.getTitle());
 		        }
@@ -233,6 +235,7 @@ public class ServerImp extends UnicastRemoteObject implements InterfaceServer{
         }
         
         public void addServer(InterfaceServer server) throws RemoteException{
+                System.out.println("Some server has connected with you");
                 this.servers.add(server);
         }
         
