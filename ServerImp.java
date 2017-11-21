@@ -16,7 +16,7 @@ import java.nio.file.Paths;
 
 public class ServerImp extends UnicastRemoteObject implements InterfaceServer{
 
-	private static String filePath = "/home/adria/rmi/servercontent/";
+	private static String filePath;
 	private static int port = 4000;
 	private static String ipAdd = "localhost";
 
@@ -30,12 +30,14 @@ public class ServerImp extends UnicastRemoteObject implements InterfaceServer{
 		users = new HashMap<InterfaceClient, String>();
 		content = new HashMap<String, Content>(); // key / Content
 		servers = new ArrayList<InterfaceServer>();
+		filePath = new File("").getAbsolutePath() + "/" + "servercontent";
 	}
 
 
 ////// USER MANAGEMENT /////
 
 	public void registerClient(String username, InterfaceClient client) throws RemoteException{
+	        client.sendMessage(filePath);
 		if(users.containsKey(client) == false && users.containsValue(username) == false){
 			users.put(client, (String) username);
 			client.sendMessage("User registered correctly");

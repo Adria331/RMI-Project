@@ -17,7 +17,7 @@ import java.util.Scanner;
 
 public class Client{
 
-	public static String filePath = "/home/adria/rmi/content/";
+	public static String filePath = new File("").getAbsolutePath() + "/" + "content";
 	public static boolean registered = false;
 	public static ClientImp client;
 	public static InterfaceServer server;
