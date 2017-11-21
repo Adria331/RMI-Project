@@ -50,7 +50,7 @@ public class Server{
 			Registry registry= LocateRegistry.getRegistry(port);
         	registry.list();
         }catch(RemoteException ex){
-        	System.out.println("RMI registry cannot be located at port" + port);
+        	System.out.println("RMI registry cannot be located at port " + port);
         	LocateRegistry.createRegistry(port);
         	System.out.println("RMI registry created at port " + port);
         }

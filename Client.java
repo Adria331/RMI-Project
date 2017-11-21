@@ -17,13 +17,13 @@ import java.util.Scanner;
 
 public class Client{
 
-	public static String filePath = new File("").getAbsolutePath() + "/" + "content";
+	public static String filePath;
 	public static boolean registered = false;
 	public static ClientImp client;
 	public static InterfaceServer server;
 
 	public static void main(String args[]){
-
+                filePath = new File("").getAbsolutePath() + "/" + "content" + "/";
 		String ip = scanner("Select the Ip address of the server (default is localhost)");
 		String port = scanner("Select the port of the server (default is 4000)");
 		
@@ -209,7 +209,8 @@ public class Client{
 			fos.close();
 			System.out.println("File downloaded at: " + filePath+title+"/"+ filename);
 		}catch(IOException ex){
-			System.out.println("File couldn't be uploaded");
+			System.out.println("File couldn't be downloaded");
+			System.out.println(ex);
 		}
 	}
 }

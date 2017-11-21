@@ -95,6 +95,7 @@ public class ServerImp extends UnicastRemoteObject implements InterfaceServer{
 
 			}catch(IOException ex){
 				client.sendMessage("File couldn't be uploaded");
+				System.out.println(ex);
 			}
 		}
 	}
