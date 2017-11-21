@@ -8,27 +8,34 @@ import java.util.Scanner;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
+import java.beans.XMLEncoder;
+import java.beans.XMLDecoder;
 
 public class ServerImp extends UnicastRemoteObject implements InterfaceServer{
 
 	private static String filePath;
+	private static String xmlFilePath;
 
 	private static Map<InterfaceClient, String> users;
 	private static Map<String, Content> content;
 
-	private static List<InterfaceServer> servers;
-	
+	private static List<InterfaceServer> servers; //Servers which are connected with you
+
+		
 	public ServerImp() throws RemoteException{
 		super();
 		users = new HashMap<InterfaceClient, String>();
 		content = new HashMap<String, Content>(); // key / Content
 		servers = new ArrayList<InterfaceServer>();
 		filePath = new File("").getAbsolutePath() + "/" + "servercontent/";
+		xmlFilePath = new File("").getAbsolutePath() + "/" + "xml/";
+		decodeXML();
 	}
 
 
@@ -75,7 +82,7 @@ public class ServerImp extends UnicastRemoteObject implements InterfaceServer{
 				//Add its data
 				c.setContentKey(key);
 				c.setOwnerName(users.get(client));
-				c.setfilepath(filePath+key+"/"+filename);
+				c.setFilepath(filePath+key+"/"+filename);
 
 				content.put(title, c);
 
@@ -87,10 +94,10 @@ public class ServerImp extends UnicastRemoteObject implements InterfaceServer{
 				fos.write(data);
 				fos.close();
 
+				encodeXML(c);
 				client.sendMessage(c.getfilepath() + " uploaded successfuly");
 				System.out.println("File uploaded: " + filename);
-				notifyAllClients(client); //Avisar a tots els clients MENYS el que puja el file
-
+				notifyAllClients(client);
 			}catch(IOException ex){
 				client.sendMessage("File couldn't be uploaded");
 				System.out.println(ex);
@@ -101,20 +108,19 @@ public class ServerImp extends UnicastRemoteObject implements InterfaceServer{
 	public List<String> getContent(String description, InterfaceClient client) throws RemoteException{
 		List<Content> list = new ArrayList<Content>(content.values());
 		List<String> titles = new ArrayList<String>();
+
 		for (Content c : list){
 			if(c.getDescription().equals(description))
 				titles.add(c.getTitle());
 		}
-	     System.out.println(servers.size());
-                for(InterfaceServer s : servers){
-                        List<Content> otherContent = s.returnContents();
-                        System.out.println("oda");
-                        for(Content c : otherContent){
-                                System.out.println("oda1");
-                                if(c.getDescription().equals(description))
-				        titles.add(c.getTitle());
-		        }
-                }
+	    
+        for(InterfaceServer s : servers){
+            List<Content> otherContent = s.returnContents();
+            for(Content c : otherContent){
+                if(c.getDescription().equals(description))
+		        	titles.add(c.getTitle());
+        	}
+        }
                 
 		if(titles.size() == 0)
 			client.sendMessage("There is no title coincident with that description");
@@ -124,8 +130,6 @@ public class ServerImp extends UnicastRemoteObject implements InterfaceServer{
 				client.sendMessage("- " + contentTitle);
 			}
 		}
-
-
 
 		return titles;
 	}
@@ -139,11 +143,16 @@ public class ServerImp extends UnicastRemoteObject implements InterfaceServer{
 				client.sendMessage("This content does not exist");
 			}
 		}else{
-			client.sendMessage("There are no content with that title");
+	        for(InterfaceServer s : servers){
+            	List<Content> otherContent = s.returnContents();
+            	for(Content c : otherContent){
+                	if(c.getTitle().equals(title))
+		        		return s.getBytesFile(title);
+    			}
+       		}
 		}
 
-
-
+		client.sendMessage("There are no content with that title");
 		return null;
 	} 
 
@@ -154,16 +163,6 @@ public class ServerImp extends UnicastRemoteObject implements InterfaceServer{
 			clientsito.sendMessage("New content has been added");
 		}
 	}
-
-
-	public List<String> getContentAdvanced(InterfaceClient client) throws RemoteException{
-		return null;
-	}
-
-
-	public void downloadAdvanced(InterfaceClient client) throws RemoteException{
-
-	} 
 
 
 	public void modifyContentTitle(String oldTitle, String newTitle,  InterfaceClient client) throws RemoteException{
@@ -232,15 +231,48 @@ public class ServerImp extends UnicastRemoteObject implements InterfaceServer{
 	
 	public void setServers(List<InterfaceServer> list) throws RemoteException{
 	        this.servers= list;
-        }
+    }
         
-        public void addServer(InterfaceServer server) throws RemoteException{
-                System.out.println("Some server has connected with you");
-                this.servers.add(server);
-        }
-        
-        public List<Content> returnContents() throws RemoteException{
-                return new ArrayList<Content>(content.values());
-        }
-	
+    public void addServer(InterfaceServer server) throws RemoteException{
+        System.out.println("Some server has been connected with you");
+        this.servers.add(server);
+    }
+    
+    public List<Content> returnContents() throws RemoteException{
+        return new ArrayList<Content>(content.values());
+    }
+
+    public byte[] getBytesFile(String title) throws RemoteException{
+    	try{
+    		return Files.readAllBytes(new File(content.get(title).getfilepath()).toPath());
+		}catch(IOException ex){
+			return null;
+		}
+    }
+
+    public void encodeXML(Content c) throws RemoteException{
+    	try{
+    		System.out.println("Generating "+ xmlFilePath + c.getTitle() + ".xml");
+    		XMLEncoder e = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(xmlFilePath + c.getTitle() + ".xml")));
+    		e.writeObject(c);
+    		e.close();
+    	}catch(IOException ex){
+    	}
+    }
+
+    public void decodeXML() throws RemoteException{
+    	XMLDecoder e;
+
+    	try{
+	    	for(File f : new File(xmlFilePath).listFiles()){
+				e = new XMLDecoder(new BufferedInputStream(new FileInputStream(f)));
+				Object result = e.readObject();
+				Content c = (Content) result;
+				content.put(c.getTitle(), c);
+				e.close();
+	    	}
+    	}catch(IOException ex){
+    		System.out.println("Can't load previous files");
+    	}
+    }
 }

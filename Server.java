@@ -18,7 +18,6 @@ public class Server{
 	public static void main(String args[]) throws RemoteException, MalformedURLException, AccessException{
 
 		try{
-			addServer = true;
 			ip = scanner("Select the Ip address of the server (default is localhost)");
 			String port2 = scanner("Select the port of the server (default is 4000)");
 
@@ -34,38 +33,39 @@ public class Server{
      
                         
 
-                        ServerImp obj = new ServerImp();
+			ServerImp obj = new ServerImp();
 			startRegistry();
 			String url = "rmi://" + ip + ":" + Integer.toString(port) + "/mytube";
 			Naming.rebind(url, obj);
 			
 
+			addServer = true;
+	        while(addServer){
+                String si = scanner("Do you want to connect with other server? y/n");
+                
+                if(si.equals("y")){
+                    String urlserver2 = scanner("Which rmi URL? -> rmi://[ip]:[port]/mytube");
+                    try{
+                        InterfaceServer s  = (InterfaceServer) Naming.lookup(urlserver2);
+                        s.addServer((InterfaceServer) Naming.lookup(url));
+                        obj.addServer(s);
+                    }catch(NotBoundException ex){
+                            System.out.println("The url is not currently bound");
+                    }catch(MalformedURLException ex){
+                            System.out.println("Registry has not an appropiate url");
+                    }catch(RemoteException ex){
+                            System.out.println("Registry cannot be contacted");
+                    }
+                        
+                }else if(si.equals("n")){
+                        addServer = false;
+                }else{
+                        System.out.println("Not a valid response");
+                }
+	                        
+	        }
 
-                        while(addServer){
-                                String si = scanner("Do you want to connect with other server? y/n");
-                                if(si.equals("y")){
-                                        String urlserver2 = scanner("Which rmi URL?");
-                                        try{
-                                                InterfaceServer s  = (InterfaceServer) Naming.lookup(urlserver2);
-                                                s.addServer((InterfaceServer) Naming.lookup(url));
-                                                obj.addServer(s);
-                                        }catch(NotBoundException ex){
-                                                System.out.println("The url is not currently bound");
-                                        }catch(MalformedURLException ex){
-                                                System.out.println("Registry has not an appropiate url");
-                                        }catch(RemoteException ex){
-                                                System.out.println("Registry cannot be contacted");
-                                        }
-                                        
-                                }else if(si.equals("n")){
-                                        addServer = false;
-                                }else{
-                                        System.out.println("Not a valid response");
-                                }
-                                        
-                        }
-
-                        System.out.println("Server ready");
+	        System.out.println("Server ready");
 
 		}catch(RemoteException ex){
 			System.out.println("Server not ready");

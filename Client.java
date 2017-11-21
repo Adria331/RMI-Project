@@ -23,7 +23,7 @@ public class Client{
 	public static InterfaceServer server;
 
 	public static void main(String args[]){
-                filePath = new File("").getAbsolutePath() + "/" + "content" + "/";
+        filePath = new File("").getAbsolutePath() + "/" + "content" + "/";
 		String ip = scanner("Select the Ip address of the server (default is localhost)");
 		String port = scanner("Select the port of the server (default is 4000)");
 		
@@ -84,6 +84,7 @@ public class Client{
 						register();
 					}else if(escollit.equals("2")){
 						System.out.println("You are going to be desconnected from the client");
+						server.discardClient(client);
 						System.exit(0);
 					}else if(escollit.equals("3")){
 						registered = true;
@@ -115,54 +116,53 @@ public class Client{
 					String escollit = scanner(opcions);
 
 					if(escollit.equals("1")){
-							System.out.println("You are going to be desconnected from the client");
-							System.exit(0);
+						System.out.println("You are going to be desconnected from the client");
+						server.discardClient(client);
+						System.exit(0);
 
 
 
 					}else if(escollit.equals("2")){
-							upload();
+						upload();
 							
 
 
 					}else if(escollit.equals("3")){
-							System.out.println("You have chosed to list content with your description");
-							String desc = scanner("Write a description to search content");
-							server.getContent(desc, client);
+						System.out.println("You have chosed to list content with your description");
+						String desc = scanner("Write a description to search content");
+						server.getContent(desc, client);
 
 
 					}else if(escollit.equals("4")){
-							System.out.println("You have chosed to download content with your title");
-							downloadContentFile();
+						System.out.println("You have chosed to download content with your title");
+						downloadContentFile();
 
 
 					}else if(escollit.equals("5")){
-							System.out.println("You have chosed to modify a title of your content");
-							String oldtitle = scanner("Title of the content you want to change?");
-							String newtitle = scanner("New title for the content?");
-							server.modifyContentTitle(oldtitle, newtitle, client);
+						System.out.println("You have chosed to modify a title of your content");
+						String oldtitle = scanner("Title of the content you want to change?");
+						String newtitle = scanner("New title for the content?");
+						server.modifyContentTitle(oldtitle, newtitle, client);
 
 
 					}else if(escollit.equals("6")){
-							System.out.println("You have chosed to delete a content of yours");
-							String title = scanner("Title of the content you want to delete?");
-							server.deleteContent(title, client);
+						System.out.println("You have chosed to delete a content of yours");
+						String title = scanner("Title of the content you want to delete?");
+						server.deleteContent(title, client);
 
 
 
 					}else if(escollit.equals("7")){
-							server.discardClient(client);
-							System.out.println("Your client was removed from the server");
-							registered = false;
+						server.discardClient(client);
+						System.out.println("Your client was removed from the server");
+						registered = false;
 
 					}else if(escollit.equals("8")){
-							System.out.println("You have chosed to list your content uploaded");
-							server.listAllMyContent(client);
+						System.out.println("You have chosed to list your content uploaded");
+						server.listAllMyContent(client);
 
 					}else if(escollit.equals("9")){
-							registered = false;
-									
-
+						registered = false;
 
 					}else{
 						System.out.println("Not a valid Option");
@@ -202,6 +202,10 @@ public class Client{
 		
 		try{
 			byte[] data = server.downloadContent(title, client);
+			if(data==null){
+				System.out.println("There has been a problem with your search");
+				return;
+			}
 			new File(filePath+title).mkdir();
 			String filename = server.getFileName(title, client);
 			FileOutputStream fos = new FileOutputStream(filePath+title+"/"+ filename);

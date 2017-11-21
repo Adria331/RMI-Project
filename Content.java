@@ -50,7 +50,7 @@ public class Content implements Serializable{
 		this.key = key;
 	}
 
-	public void setfilepath(String filepath){
+	public void setFilepath(String filepath){
 		this.filepath = filepath;
 	}
 
