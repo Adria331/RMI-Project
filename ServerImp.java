@@ -37,7 +37,6 @@ public class ServerImp extends UnicastRemoteObject implements InterfaceServer{
 ////// USER MANAGEMENT /////
 
 	public void registerClient(String username, InterfaceClient client) throws RemoteException{
-	        client.sendMessage(filePath);
 		if(users.containsKey(client) == false && users.containsValue(username) == false){
 			users.put(client, (String) username);
 			client.sendMessage("User registered correctly");

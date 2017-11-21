@@ -55,6 +55,7 @@ public class Client{
 
 		}catch(RemoteException ex){
 			System.out.println("A RemoteException has been caught");
+			System.out.println(ex);
 		}
 
 	}
