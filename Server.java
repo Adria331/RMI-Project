@@ -1,7 +1,7 @@
 
 import java.rmi.*;
 import java.net.MalformedURLException;
-
+import java.util.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Scanner;
@@ -11,10 +11,14 @@ public class Server{
 	private static int port;
 	private static String ip;
 
+        private List<InterfaceServer> servers;
+        
+        static boolean addServer;
+        
 	public static void main(String args[]) throws RemoteException, MalformedURLException, AccessException{
 
 		try{
-			ServerImp obj = new ServerImp();
+			addServer = true;
 			ip = scanner("Select the Ip address of the server (default is localhost)");
 			String port2 = scanner("Select the port of the server (default is 4000)");
 
@@ -27,12 +31,40 @@ public class Server{
 			if(ip == null || ip.equals(""))
 				ip = "localhost";
 
-			obj.setAdd(ip);
-			obj.setPort(port);
+     
+                        
+
+                        ServerImp obj = new ServerImp();
 			startRegistry();
 			String url = "rmi://" + ip + ":" + Integer.toString(port) + "/mytube";
 			Naming.rebind(url, obj);
 			System.out.println("Server ready");
+
+
+                        while(addServer){
+                                String si = scanner("Do you want to connect with other server? y/n");
+                                if(si.equals("y")){
+                                        String urlserver2 = scanner("Which rmi URL?");
+                                        try{
+                                                InterfaceServer s  = (InterfaceServer) Naming.lookup(urlserver2);
+                                                s.addServer((InterfaceServer) Naming.lookup(url));
+                                        }catch(NotBoundException ex){
+                                                System.out.println("The url is not currently bound");
+                                        }catch(MalformedURLException ex){
+                                                System.out.println("Registry has not an appropiate url");
+                                        }catch(RemoteException ex){
+                                                System.out.println("Registry cannot be contacted");
+                                        }
+                                        
+                                }else if(si.equals("n")){
+                                        addServer = false;
+                                }else{
+                                        System.out.println("Not a valid response");
+                                }
+                                        
+                        }
+
+
 
 		}catch(RemoteException ex){
 			System.out.println("Server not ready");

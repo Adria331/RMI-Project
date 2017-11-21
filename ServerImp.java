@@ -17,8 +17,6 @@ import java.nio.file.Paths;
 public class ServerImp extends UnicastRemoteObject implements InterfaceServer{
 
 	private static String filePath;
-	private static int port = 4000;
-	private static String ipAdd = "localhost";
 
 	private static Map<InterfaceClient, String> users;
 	private static Map<String, Content> content;
@@ -30,7 +28,7 @@ public class ServerImp extends UnicastRemoteObject implements InterfaceServer{
 		users = new HashMap<InterfaceClient, String>();
 		content = new HashMap<String, Content>(); // key / Content
 		servers = new ArrayList<InterfaceServer>();
-		filePath = new File("").getAbsolutePath() + "/" + "servercontent";
+		filePath = new File("").getAbsolutePath() + "/" + "servercontent/";
 	}
 
 
@@ -107,6 +105,15 @@ public class ServerImp extends UnicastRemoteObject implements InterfaceServer{
 			if(c.getDescription().equals(description))
 				titles.add(c.getTitle());
 		}
+		
+                for(InterfaceServer s : servers){
+                        List<Content> otherContent = s.returnContents();
+                        for(Content c : otherContent){
+                                if(c.getDescription().equals(description))
+				        titles.add(c.getTitle());
+		        }
+                }
+                
 		if(titles.size() == 0)
 			client.sendMessage("There is no title coincident with that description");
 		else{
@@ -116,8 +123,8 @@ public class ServerImp extends UnicastRemoteObject implements InterfaceServer{
 			}
 		}
 
-		
-		
+
+
 		return titles;
 	}
 
@@ -208,13 +215,6 @@ public class ServerImp extends UnicastRemoteObject implements InterfaceServer{
 		}
 	}
 
-	public void setAdd(String add){
-		this.ipAdd = add;
-	}
-
-	public void setPort(int port){
-		this.port = port;
-	}
 
 	public String getFileName(String title, InterfaceClient client) throws RemoteException{
 		return content.get(title).getFilename();
@@ -227,5 +227,17 @@ public class ServerImp extends UnicastRemoteObject implements InterfaceServer{
 				client.sendMessage("- "+c.getTitle());
 		}
 	}
+	
+	public void setServers(List<InterfaceServer> list) throws RemoteException{
+	        this.servers= list;
+        }
+        
+        public void addServer(InterfaceServer server) throws RemoteException{
+                this.servers.add(server);
+        }
+        
+        public List<Content> returnContents() throws RemoteException{
+                return new ArrayList<Content>(content.values());
+        }
 	
 }

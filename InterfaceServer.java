@@ -37,4 +37,9 @@ source server in a transparent way for the client. */
 	public void deleteContent(String title, InterfaceClient client) throws RemoteException;
 
 	public void listAllMyContent(InterfaceClient client) throws RemoteException;
+	
+        public void addServer(InterfaceServer server) throws RemoteException;
+        public void setServers(List<InterfaceServer> list) throws RemoteException;
+        
+        public List<Content> returnContents() throws RemoteException;
 }
