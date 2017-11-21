@@ -263,6 +263,9 @@ public class ServerImp extends UnicastRemoteObject implements InterfaceServer{
     public void decodeXML() throws RemoteException{
     	XMLDecoder e;
 
+    	if(!(new File(new File("").getAbsolutePath() + "/" + "xml").exists()))
+    		return;
+
     	try{
 	    	for(File f : new File(xmlFilePath).listFiles()){
 				e = new XMLDecoder(new BufferedInputStream(new FileInputStream(f)));
