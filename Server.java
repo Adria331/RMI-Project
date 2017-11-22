@@ -44,19 +44,24 @@ public class Server{
                 String si = scanner("Do you want to connect with other server? y/n");
                 
                 if(si.equals("y")){
-                    String urlserver2 = scanner("Which rmi URL? -> rmi://[ip]:[port]/mytube");
-                    try{
-                        InterfaceServer s  = (InterfaceServer) Naming.lookup(urlserver2);
-                        s.addServer((InterfaceServer) Naming.lookup(url));
-                        obj.addServer(s);
-                    }catch(NotBoundException ex){
-                            System.out.println("The url is not currently bound");
-                    }catch(MalformedURLException ex){
-                            System.out.println("Registry has not an appropiate url");
-                    }catch(RemoteException ex){
-                            System.out.println("Registry cannot be contacted");
-                    }
-                        
+                    String ipserver2 = scanner("Which ip");
+                    String portserver2 = scanner("Which port?");
+                    if(ipserver2.equals("") || portserver2.equals("")){
+                        System.out.println("Port or ip not valid"); 
+                    }else{
+                            String urlserver2 = "rmi://" + ipserver2 + ":" + portserver2 + "/mytube";
+                            try{
+                                InterfaceServer s  = (InterfaceServer) Naming.lookup(urlserver2);
+                                s.addServer((InterfaceServer) Naming.lookup(url));
+                                obj.addServer(s);
+                            }catch(NotBoundException ex){
+                                    System.out.println("The url is not currently bound");
+                            }catch(MalformedURLException ex){
+                                    System.out.println("Registry has not an appropiate url");
+                            }catch(RemoteException ex){
+                                    System.out.println("Registry cannot be contacted");
+                            }
+                        }
                 }else if(si.equals("n")){
                         addServer = false;
                 }else{
@@ -83,7 +88,7 @@ public class Server{
 			Registry registry= LocateRegistry.getRegistry(port);
         	registry.list();
         }catch(RemoteException ex){
-        	System.out.println("RMI registry cannot be located at port " + port);
+        	System.out.println("RMI registry is not located at port " + port);
         	LocateRegistry.createRegistry(port);
         	System.out.println("RMI registry created at port " + port);
         }
