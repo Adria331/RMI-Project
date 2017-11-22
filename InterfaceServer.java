@@ -2,7 +2,7 @@
 
 import java.rmi.*;
 import java.rmi.RemoteException;
-import java.util.List;
+import java.util.*;
 
 
 public interface InterfaceServer extends Remote{
@@ -30,6 +30,7 @@ public interface InterfaceServer extends Remote{
         
     public List<Content> returnContents() throws RemoteException;
     public byte[] getBytesFile(String title) throws RemoteException;
+    public Map<String,Content> getMapContent() throws RemoteException;
 
     public void encodeXML(Content c) throws RemoteException;
     public void decodeXML() throws RemoteException;

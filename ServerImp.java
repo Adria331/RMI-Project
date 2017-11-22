@@ -144,9 +144,9 @@ public class ServerImp extends UnicastRemoteObject implements InterfaceServer{
 			}
 		}else{
 	        for(InterfaceServer s : servers){
-            	List<Content> otherContent = s.returnContents();
-            	for(Content c : otherContent){
-                	if(c.getTitle().equals(title))
+                    	List<Content> otherContent = s.returnContents();
+                    	for(Content c : otherContent){
+                	        if(c.getTitle().equals(title))
 		        		return s.getBytesFile(title);
     			}
        		}
@@ -218,7 +218,16 @@ public class ServerImp extends UnicastRemoteObject implements InterfaceServer{
 
 
 	public String getFileName(String title, InterfaceClient client) throws RemoteException{
-		return content.get(title).getFilename();
+	        if(content.containsKey(title))
+		        return content.get(title).getFilename();
+	        else{
+	                for(InterfaceServer s : servers){
+                                if(s.getMapContent().containsKey(title))
+                                        return s.getMapContent().get(title).getFilename();
+       		        }
+	        }
+	        
+	        return null;
 	}
 
 	public void listAllMyContent(InterfaceClient client) throws RemoteException{
@@ -278,4 +287,10 @@ public class ServerImp extends UnicastRemoteObject implements InterfaceServer{
     		System.out.println("Can't load previous files");
     	}
     }
+    
+    public Map<String,Content> getMapContent() throws RemoteException{
+        return content;
+    }
+    
+    
 }
